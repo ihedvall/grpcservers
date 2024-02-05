@@ -8,7 +8,7 @@
 #include <memory>
 #include <ods/idatabase.h>
 
-namespace ods::test {
+namespace serv::test {
 
 class TestSyslogRunner : public testing::Test {
 public:

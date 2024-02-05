@@ -5,10 +5,8 @@
 
 
 #include <atomic>
-#include <chrono>
 #include <csignal>
 #include <filesystem>
-#include <memory>
 #include <string>
 #include <thread>
 #include <vector>
@@ -21,6 +19,7 @@
 #include <util/logstream.h>
 #include <util/utilfactory.h>
 #include <ods/odsfactory.h>
+
 #include "../../src/syslogrpcserver.h"
 
 using namespace util::log;
@@ -28,7 +27,8 @@ using namespace util::string;
 using namespace std::chrono_literals;
 using namespace boost::program_options;
 using namespace std::filesystem;
-
+using namespace ods;
+using namespace serv;
 
 namespace {
 std::atomic<bool> kStopMain = false;
@@ -152,7 +152,7 @@ void CreateSqliteDb() {
     db_file.append("eventlog");
     create_directories(db_file);
     db_file.append("eventlogdb.sqlite");
-    auto database = ods::OdsFactory::CreateDatabase(ods::DbType::TypeSqlite);
+    auto database = OdsFactory::CreateDatabase(ods::DbType::TypeSqlite);
     database->ConnectionInfo(db_file.string());
     ods::IModel model;
     const auto read = model.ReadModel(kModelFile);
@@ -213,7 +213,7 @@ int main(int nof_arg, char *arg_list[]) {
   LOG_TRACE() << "Connection String: " << kConnectionString;
   LOG_TRACE() << "RPC Port: " << kServerPort;
   {
-    ods::SyslogRpcServer server;
+    SyslogRpcServer server;
     std::ostringstream arguments;
     arguments << "--connection=\"" << kConnectionString << "\"";
     arguments << " --port=" << kServerPort;

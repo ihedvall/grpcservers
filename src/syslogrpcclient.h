@@ -12,7 +12,7 @@
 #include "proto/syslogservice.pb.h"
 #include "proto/syslogservice.grpc.pb.h"
 
-namespace ods {
+namespace serv {
 
 using SyslogList = std::vector<util::syslog::SyslogMessage>;
 

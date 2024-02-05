@@ -8,19 +8,20 @@
 #include <filesystem>
 #include <chrono>
 #include <util/logconfig.h>
-#include "ods/odsfactory.h"
+#include "serv/servfactory.h"
 #include "ods/imodel.h"
 #include "sysloginserter.h"
 #include "syslogrpcserver.h"
 #include "syslogrpcclient.h"
 #include <source_location>
+#include <ods/odsfactory.h>
 
 using namespace std::filesystem;
 using namespace std::chrono_literals;
 using namespace util::log;
 using namespace workflow;
 using namespace util::syslog;
-
+using namespace ods;
 
 namespace {
   std::string kTestLogDir;
@@ -32,7 +33,7 @@ namespace {
   std::unique_ptr<ods::IDatabase> kDatabase;
 }
 
-namespace ods::test {
+namespace serv::test {
 void TestSyslogRunner::SetUpTestSuite() {
   try {
     path root_dir = temp_directory_path();
@@ -90,8 +91,8 @@ void TestSyslogRunner::SetUpTestSuite() {
     db_file.append("eventlogdb.sqlite");
     kDbFile = db_file.string();
     std::cout << "DB Name: " << kDbFile << std::endl;
-
-    kDatabase = std::move(OdsFactory::CreateDatabase(DbType::TypeSqlite));
+    const auto& ods_factory = OdsFactory::Instance();
+    kDatabase = std::move(ods_factory.CreateDatabase(DbType::TypeSqlite));
     kDatabase->ConnectionInfo(kDbFile);
 
     IModel model;

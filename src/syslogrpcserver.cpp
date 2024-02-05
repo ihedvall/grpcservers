@@ -18,11 +18,12 @@ using namespace util::string;
 using namespace util::syslog;
 using namespace util::log;
 using namespace grpc;
+using namespace ods;
 
 namespace {
 constexpr uint16_t kDefaultSyslogServerPort = 50600; ///< Default event port
 }
-namespace ods {
+namespace serv {
 SyslogRpcServer::SyslogRpcServer() {
   Name(kSyslogRpcServer.data());
   Template(kSyslogRpcServer.data());

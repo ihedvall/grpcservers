@@ -65,7 +65,7 @@ void SyslogToEvent(const util::syslog::SyslogMessage& syslog,
 
 } // end namespace
 
-namespace ods {
+namespace serv {
 
 SyslogRpcClient::SyslogRpcClient(std::string host, uint16_t port)
 : host_(std::move(host)),

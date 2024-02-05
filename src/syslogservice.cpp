@@ -15,7 +15,7 @@
 using namespace ::syslog;
 using namespace ::grpc;
 using namespace ::util::log;
-
+using namespace ::ods;
 namespace {
 
 void NsToProtoTimestamp(uint64_t ns1970,
@@ -53,7 +53,8 @@ util::syslog::SyslogMessage ProtobufMessageToSyslogMessage(
 
 } // end namespace
 
-namespace ods {
+namespace serv {
+
 SyslogService::SyslogService(SyslogRpcServer &server)
     : server_(server)
 {

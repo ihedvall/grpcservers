@@ -44,7 +44,8 @@ add_library(serv
         src/syslogrpcserver.cpp src/syslogrpcserver.h
         src/syslogservice.cpp src/syslogservice.h
         ${PROTO_FILES}
-        src/syslogrpcclient.cpp src/syslogrpcclient.h)
+        src/syslogrpcclient.cpp src/syslogrpcclient.h
+        src/servfactory.cpp)
 
 protobuf_generate(
         TARGET serv
@@ -91,7 +92,7 @@ target_include_directories(serv PUBLIC
 
 target_compile_definitions(serv PRIVATE XML_STATIC)
 
-set(ODS_PUBLIC_HEADERS include/ods/itable.h)
+set(ODS_PUBLIC_HEADERS include/serv/servfactory.h)
 
 set_target_properties(ods PROPERTIES PUBLIC_HEADER "${ODS_PUBLIC_HEADERS}")
 get_target_property(PH3 ods PUBLIC_HEADER)

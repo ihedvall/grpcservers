@@ -7,7 +7,7 @@
 #include "proto/syslogservice.pb.h"
 #include "proto/syslogservice.grpc.pb.h"
 #include "ods/sqlfilter.h"
-namespace ods {
+namespace serv {
 class SyslogRpcServer;
 class SyslogService final : public syslog::SyslogService::Service {
 public:
@@ -41,7 +41,7 @@ public:
 private:
   SyslogRpcServer& server_;
 
-  [[nodiscard]] SqlFilter MakeFilter(const syslog::SyslogFilter& syslog_filter)
+  [[nodiscard]] ods::SqlFilter MakeFilter(const syslog::SyslogFilter& syslog_filter)
       const;
 
 };
