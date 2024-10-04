@@ -23,7 +23,7 @@ ServFactory::ServFactory() {
   name_ = "Serv Factory";
   description_ = "Tasks that implements gRPC servers.";
 
-  std::array<std::unique_ptr<IRunner>,1> template_list = {
+  std::array<std::unique_ptr<ITask>,1> template_list = {
       std::make_unique<SyslogRpcServer>(),
   };
 
@@ -37,8 +37,8 @@ ServFactory& ServFactory::Instance() {
   return instance;
 }
 
-std::unique_ptr<workflow::IRunner> ServFactory::CreateRunner(const workflow::IRunner& source) const {
-  std::unique_ptr<IRunner> runner;
+std::unique_ptr<workflow::ITask> ServFactory::CreateTask(const workflow::ITask& source) const {
+  std::unique_ptr<ITask> runner;
   const auto& template_name = source.Template();
   if (IEquals(template_name, kSyslogRpcServer.data())) {
     auto temp = std::make_unique<SyslogRpcServer>(source);
@@ -46,4 +46,5 @@ std::unique_ptr<workflow::IRunner> ServFactory::CreateRunner(const workflow::IRu
   }
   return runner;
 }
+
 }

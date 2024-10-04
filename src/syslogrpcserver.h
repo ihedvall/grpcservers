@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <workflow/irunner.h>
+#include <workflow/itask.h>
 #include "ods/imodel.h"
 #include "ods/idatabase.h"
 #include <util/syslogmessage.h>
@@ -18,10 +18,10 @@ class Server;
 }
 namespace serv {
 
-class SyslogRpcServer : public workflow::IRunner {
+class SyslogRpcServer : public workflow::ITask {
 public:
   SyslogRpcServer();
-  explicit SyslogRpcServer(const IRunner& source);
+  explicit SyslogRpcServer(const ITask& source);
   ~SyslogRpcServer() override;
 
   void Init() override;

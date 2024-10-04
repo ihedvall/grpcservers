@@ -5,15 +5,15 @@
 
 #pragma once
 #include <memory>
-#include <workflow/irunnerfactory.h>
+#include <workflow/itaskfactory.h>
 
 namespace serv {
 
-class ServFactory : public workflow::IRunnerFactory {
+class ServFactory : public workflow::ITaskFactory {
  public:
 
-  [[nodiscard]] std::unique_ptr<workflow::IRunner> CreateRunner(
-      const workflow::IRunner& source) const override;
+  [[nodiscard]] std::unique_ptr<workflow::ITask> CreateTask(
+      const workflow::ITask& source) const override;
 
 
    static ServFactory& Instance();

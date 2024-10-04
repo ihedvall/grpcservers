@@ -36,8 +36,8 @@ SyslogRpcServer::SyslogRpcServer() {
   Arguments(temp.str());
 }
 
-SyslogRpcServer::SyslogRpcServer(const workflow::IRunner &source)
-    : IRunner(source) {
+SyslogRpcServer::SyslogRpcServer(const workflow::ITask &source)
+    : ITask(source) {
   Template(kSyslogRpcServer.data());
   ParseArguments();
 }
@@ -49,7 +49,7 @@ SyslogRpcServer::~SyslogRpcServer() {
 void SyslogRpcServer::ParseArguments() {
   std::string arguments = Arguments();
   // If nor arguments are given, the copy the insert syslog task arguments.
-  if (const auto* inserter = GetRunnerByTemplateName(kSyslogInserter.data());
+  if (const auto* inserter = GetTaskByTemplateName(kSyslogInserter.data());
       inserter != nullptr) {
     arguments = inserter->Arguments();
   }
@@ -86,8 +86,8 @@ void SyslogRpcServer::ParseArguments() {
 }
 
 void SyslogRpcServer::Init() {
-  IRunner::Init();
-  const auto* temp = GetRunnerByTemplateName(kSyslogInserter.data());
+  ITask::Init();
+  const auto* temp = GetTaskByTemplateName(kSyslogInserter.data());
   inserter_ = temp != nullptr ? dynamic_cast<const SyslogInserter*>(temp) :
                               nullptr;
   ParseArguments();
@@ -113,7 +113,7 @@ void SyslogRpcServer::Init() {
 
 void SyslogRpcServer::Exit() {
   StopThread();
-  IRunner::Exit();
+  ITask::Exit();
   database_.reset();
   inserter_ = nullptr;
 }
