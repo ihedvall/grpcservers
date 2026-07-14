@@ -22,6 +22,7 @@
 
 #include "../../src/syslogrpcserver.h"
 
+using namespace util;
 using namespace util::log;
 using namespace util::string;
 using namespace std::chrono_literals;
@@ -88,15 +89,18 @@ void SetupLogSystem() {
   log_config.SubDir("eventlog/log"); // Hint of relative path
   log_config.BaseName("eventlogrpc"); // Log file name without extension (stem)
   log_config.CreateDefaultLogger(); // Create logger with name 'Default"
+  if (ILogger* def_log = log_config.GetLogger("Default"); def_log != nullptr) {
+    def_log->EnableSeverityLevel(LogSeverity::kDebug, false);
+    def_log->EnableSeverityLevel(LogSeverity::kTrace, false);
+  }
 
-  // Log to console if in debug mode. Hint: LOG_TRACE is going to console only.
-#ifdef _DEBUG
-  std::vector<std::string> empty_list;
+  // Log to console.
+  constexpr std::vector<std::string> empty_list;
   auto log_console =
-      util::UtilFactory::CreateLogger(LogType::LogToConsole, empty_list);
+      UtilFactory::CreateLogger(LogType::LogToConsole, empty_list);
   log_config.AddLogger("Console", std::move(log_console));
-#endif
-  LOG_TRACE() << "Log File created. Path: " << log_config.GetLogFile();
+
+  LOG_INFO() << "Log File created. Path: " << log_config.GetLogFile();
 }
 
 bool CheckInputArguments(int nof_arg, char* arg_list[]) {
@@ -120,11 +124,14 @@ bool CheckInputArguments(int nof_arg, char* arg_list[]) {
     variables_map vm;
     store(opt, vm);
     notify(vm);
-    if (vm.count("help")) {
+    if (vm.contains("help")) {
       std::cout << desc << std::endl;
       kStopMain = false;
       return false;
     }
+    LOG_INFO() << "Input kDbType: " << kDbType;
+    LOG_INFO() << "Input kConnectionstring: " << kConnectionString;
+    LOG_INFO() << "Input kServerPort: " << kServerPort;
   } catch (const std::exception &err) {
     LOG_ERROR() << "Fail to parse the input arguments. Error: " << err.what();
     return false;
@@ -138,35 +145,39 @@ void FindSqliteDb() {
     db_file.append("eventlog");
     db_file.append("eventlogdb.sqlite");
     if (exists(db_file)) {
+      LOG_INFO() << "Found SQLite db file. Path: " << db_file;
       kConnectionString =  db_file.string();
       kDbFile = kConnectionString;
+    } else {
+      LOG_INFO() << "Not finding SQLite DB file. Serach Path: " << db_file;
     }
   } catch (const std::exception &err) {
-    LOG_TRACE() << "Data Directory error: " << err.what();
+    LOG_ERROR() << "Data Directory error: " << err.what();
   }
 }
 
 void CreateSqliteDb() {
   try {
+    LOG_INFO() << "Creating SQLite DB file.";
     path db_file(ProgramDataPath());
     db_file.append("eventlog");
     create_directories(db_file);
     db_file.append("eventlogdb.sqlite");
     auto database = OdsFactory::CreateDatabase(ods::DbType::TypeSqlite);
     database->ConnectionInfo(db_file.string());
-    ods::IModel model;
+    IModel model;
     const auto read = model.ReadModel(kModelFile);
     if (!read) {
       throw std::runtime_error("Failed to read the model file.");
     }
-    LOG_TRACE() << "Read the model file. File: " << kModelFile;
+    LOG_INFO() << "Read the model file. File: " << kModelFile;
     const auto create = database->Create(model);
     if (!create) {
       throw std::runtime_error("Failed to create the database.");
     }
     kDbFile = database->ConnectionInfo();
     kConnectionString = database->ConnectionInfo();
-    LOG_TRACE() << "Created the database. File: " << kDbFile;
+    LOG_INFO() << "Created the database. File: " << kDbFile;
   } catch (const std::exception& err) {
     LOG_ERROR() << "Failed to create the SQLite database. Error: "
       << err.what();
@@ -209,9 +220,9 @@ int main(int nof_arg, char *arg_list[]) {
     LOG_ERROR() << "No connection string. Cannot connect to the database.";
     return EXIT_FAILURE;
   }
-  LOG_TRACE() << "Database Type: " << kDbType;
-  LOG_TRACE() << "Connection String: " << kConnectionString;
-  LOG_TRACE() << "RPC Port: " << kServerPort;
+  LOG_INFO() << "Database Type: " << kDbType;
+  LOG_INFO() << "Connection String: " << kConnectionString;
+  LOG_INFO() << "gRPC Port: " << kServerPort;
   {
     SyslogRpcServer server;
     std::ostringstream arguments;
@@ -230,7 +241,7 @@ int main(int nof_arg, char *arg_list[]) {
   }
   kStopMain = false;
 
-  LOG_TRACE() << "Stopped event RPC daemon";
+  LOG_TRACE() << "Stopped event gRPC daemon";
 
   auto &log_config = LogConfig::Instance();
   log_config.DeleteLogChain();

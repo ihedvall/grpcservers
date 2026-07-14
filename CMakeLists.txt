@@ -28,7 +28,7 @@ include("script/sqlite3.cmake")
 include("script/postgresql.cmake")
 include("script/protobuf.cmake")
 include("script/grpc.cmake")
-
+include("script/openssl.cmake")
 if (SERV_TEST)
     include("script/googletest.cmake")
 endif()
